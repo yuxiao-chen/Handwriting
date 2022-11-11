@@ -22,7 +22,7 @@ function removeLeastCharacter(str) {
         }
     });
     console.log(leastChar)
-    
+
     return str.replace(new RegExp(leastChar.char, 'g'), '')
 }
 
