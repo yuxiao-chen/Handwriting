@@ -132,5 +132,34 @@ CusPromise.defer = CusPromise.deferred = function () {
     return dfd;
 }
 
+const isPromise = (value) => {
+    if ((typeof value === 'object' && value !== null) || typeof value === 'function') {
+        if (typeof value.then === 'function') return true
+    }
+    return false
+}
+
+CusPromise.all = function (values) {
+    return new CusPromise((resolve, reject) => {
+        const result = []
+        let finishedNum = 0
+        const processData = (v, k) => {
+            result[k] = v
+            if (++finishedNum === result.length) {
+                resolve(result)
+            }
+        }
+        values.forEach((cur, i) => {
+            if (isPromise(cur)) {
+                cur.then((x) => {
+                    processData(x, i)
+                }, reject)
+            } else {
+                processData(cur, i)
+            }
+        })
+    })
+}
+
 
 module.exports = CusPromise
