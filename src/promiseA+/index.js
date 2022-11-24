@@ -121,6 +121,9 @@ class CusPromise {
         })
         return promise2
     }
+    catch(rejectFn = () => { }) {
+        this.then(undefined, rejectFn)
+    }
 }
 
 CusPromise.defer = CusPromise.deferred = function () {
@@ -161,5 +164,14 @@ CusPromise.all = function (values) {
     })
 }
 
+CusPromise.race = function (values) {
+    return new CusPromise((resolve) => {
+        values.forEach((item) => {
+            item.then((v) => {
+                resolve(v)
+            })
+        })
+    })
+}
 
 module.exports = CusPromise

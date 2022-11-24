@@ -1,22 +1,4 @@
 
-function co(gens) {
-    return new Promise((resolve, reject) => {
-        function next() {
-            const { done, value } = gens.next()
-            if (done) {
-                resolve(value)
-            } else {
-                // value 可能会是个 promise
-                Promise.resolve(value).then((v) => {
-                    next(v)
-                }, () => {
-                    reject()
-                })
-            }
-        }
-        next()
-    })
-}
 
 
 function pFn(mark) {
@@ -68,6 +50,25 @@ function generatorToAsync(gen) {
     }
 }
 
+function co(gen) {
+    return new Promise((resolve, reject) => {
+        function next(arg) {
+            const { done, value } = gen.next(arg)
+            if (done) {
+                resolve(value)
+            } else {
+                // value 可能会是个 promise
+                Promise.resolve(value).then((v) => {
+                    next(v)
+                }, () => {
+                    reject()
+                })
+            }
+        }
+        next()
+    })
+}
+
 function* genFn() {
     let i = 1
     console.log('genFn start', pFn);
@@ -87,4 +88,9 @@ function* genFn() {
 const gen2Async = generatorToAsync(genFn)
 gen2Async().then((res) => {
     console.log('✅ gen2Async done', res)
+})
+
+
+co(genFn()).then(res => {
+    console.log('完成 co', res)
 })

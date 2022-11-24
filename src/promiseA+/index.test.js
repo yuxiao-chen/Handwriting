@@ -36,13 +36,31 @@ p.then((res) => {
 //     console.log('catch err', err)
 // })
 
-const p2 = new Promise1((res)=>{
-    setTimeout(()=>{
+const p2 = new Promise1((res) => {
+    setTimeout(() => {
         console.log('完成 p2 end')
-        res()
-    }, 500) 
+        res('p2222222')
+    }, 500)
 })
 
-Promise1.all([p, p2]).then(()=>{
+Promise1.race([p, p2]).then((res) => {
+    console.log('race 结果：' + res)
+})
+
+Promise1.all([p, p2]).then(() => {
     console.log('✅ [p1, p2] end')
 })
+
+
+
+var a = ()=>{
+    return new Promise((res,rej)=>{
+
+        throw new Error('111')
+    })
+}
+
+// a().then(res=>{}).catch(e=>console.log('---err---\n', e))
+a().then(res=>{}, rej=>{
+    console.log('--rej-- \n',rej)
+}).catch(e=>console.log('--e--\n', e))
